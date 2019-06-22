@@ -1,13 +1,53 @@
 package com.zinzin.tooluploaddb;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+import com.zinzin.tooluploaddb.fragment.DotaUnderLordsFragment;
+import com.zinzin.tooluploaddb.fragment.TFTFragment;
 
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    Button btnTFT, btnDotaLords;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initView();
+    }
+
+    private void initView() {
+        btnTFT = findViewById(R.id.btn_tft);
+        btnDotaLords = findViewById(R.id.btn_dota_underlords);
+        btnTFT.setOnClickListener(this);
+        btnDotaLords.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_tft:
+                TFTFragment tftFragment = TFTFragment.newInstance();
+                goToFragment(tftFragment);
+                break;
+            case R.id.btn_dota_underlords:
+                DotaUnderLordsFragment dotaUnderLordsFragment = DotaUnderLordsFragment.newInstance();
+                goToFragment(dotaUnderLordsFragment);
+                break;
+            case R.id.btn_lol_counter:
+                break;
+            case R.id.btn_lol_Tier:
+                break;
+        }
+    }
+
+    private void goToFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
