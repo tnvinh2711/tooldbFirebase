@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.zinzin.tooluploaddb.R;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Detail;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Item;
+import com.zinzin.tooluploaddb.model.teamFightTatics.Origin;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Round;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Type;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Unit;
@@ -35,6 +36,8 @@ public class TFTFragment extends Fragment {
     private List<Round> roundList = new ArrayList<>();
     private List<String> detailUrlList = new ArrayList<>();
     private List<Detail> detailList = new ArrayList<>();
+    private List<Origin> originList = new ArrayList<>();
+    private List<Origin> classList = new ArrayList<>();
     int idItem = 0;
     DatabaseReference rootRef;
 
@@ -66,6 +69,8 @@ public class TFTFragment extends Fragment {
                 getDetail(detailUrlList);
                 getListItem();
                 getListRound();
+                getListOrigin();
+                getListClass();
                 return "";
             }
 
@@ -84,8 +89,56 @@ public class TFTFragment extends Fragment {
                 for (Round round : roundList) {
                     rootRef.child("roundList").child(round.getName()).setValue(round);
                 }
+                for (Origin class_ : classList) {
+                    rootRef.child("classList").child(class_.getName()).setValue(class_);
+                }
+                for (Origin origin : originList) {
+                    rootRef.child("originList").child(origin.getName()).setValue(origin);
+                }
             }
         }.execute();
+    }
+
+    private void getListOrigin() {
+        try {
+            Document docOrigin = Jsoup.connect(URL + "/teamfight-tactics/best-origin/").get();
+            Elements originsElements = docOrigin.getElementsByClass("counters-sidebar-sim");
+            for (int i = 0; i < originsElements.size(); i++) {
+                Origin origin = new Origin();
+                origin.setUrl(originsElements.get(i).select("img").attr("src"));
+                origin.setName(originsElements.get(i).getElementsByClass("perk-text").text());
+                Elements desEles = originsElements.get(i).getElementsByClass("ssbulitl");
+                List<String> desList = new ArrayList<>();
+                for(Element desEle: desEles){
+                    desList.add(desEle.text());
+                }
+                origin.setDes(desList);
+                originList.add(origin);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getListClass() {
+        try {
+            Document docOrigin = Jsoup.connect(URL + "/teamfight-tactics/best-class/").get();
+            Elements originsElements = docOrigin.getElementsByClass("counters-sidebar-sim");
+            for (int i = 0; i < originsElements.size(); i++) {
+                Origin origin = new Origin();
+                origin.setUrl(originsElements.get(i).select("img").attr("src"));
+                origin.setName(originsElements.get(i).getElementsByClass("perk-text").text());
+                Elements desEles = originsElements.get(i).getElementsByClass("ssbulitl");
+                List<String> desList = new ArrayList<>();
+                for(Element desEle: desEles){
+                    desList.add(desEle.text());
+                }
+                origin.setDes(desList);
+                classList.add(origin);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void getListRound() {
@@ -101,7 +154,6 @@ public class TFTFragment extends Fragment {
                 round.setUrl(roundEle.select("img").attr("src"));
                 roundList.add(round);
             }
-            Log.e("qewqw","");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -225,25 +277,25 @@ public class TFTFragment extends Fragment {
                 String tier = "";
                 switch (i) {
                     case 0:
-                        tier = "S Tier (GOD TIER)";
+                        tier = "S";
                         break;
                     case 1:
-                        tier = "A Tier (STRONG)";
+                        tier = "A";
                         break;
                     case 2:
-                        tier = "B Tier (GOOD)";
+                        tier = "B";
                         break;
                     case 3:
-                        tier = "C Tier (AVERAGE)";
+                        tier = "C";
                         break;
                     case 4:
-                        tier = "D Tier (BELOW AVERAGE)";
+                        tier = "D";
                         break;
                     case 5:
-                        tier = "E Tier (WEAK)";
+                        tier = "E";
                         break;
                     case 6:
-                        tier = "F Tier (WORST TIER)";
+                        tier = "F";
                         break;
                 }
                 for (Element unitElements : unitListElements) {
