@@ -77,7 +77,7 @@ public class TFTFragment extends Fragment {
             @Override
             protected void onPostExecute(String result) {
                 for (Unit unit : unitList) {
-                    rootRef.child("unitList").child(unit.getName()).setValue(unit);
+                    rootRef.child("unit").child("unitList").child(unit.getName()).setValue(unit);
 
                 }
                 for (Detail detail : detailList) {
@@ -90,10 +90,10 @@ public class TFTFragment extends Fragment {
                     rootRef.child("roundList").child(round.getName()).setValue(round);
                 }
                 for (Origin class_ : classList) {
-                    rootRef.child("classList").child(class_.getName()).setValue(class_);
+                    rootRef.child("unit").child("classList").child(class_.getName()).setValue(class_);
                 }
                 for (Origin origin : originList) {
-                    rootRef.child("originList").child(origin.getName()).setValue(origin);
+                    rootRef.child("unit").child("originList").child(origin.getName()).setValue(origin);
                 }
             }
         }.execute();
@@ -171,10 +171,10 @@ public class TFTFragment extends Fragment {
                     item.setDes(elementCombineItem.getElementsByClass("item-td-underlords-desc").text());
                     item.setUrl(elementCombineItem.select("img").attr("src"));
                     if (i > 0) {
-                        Elements itemCombine = elementCombineItem.getElementsByClass("rb-build-overview-td best-hero-list-items").first().select("a");
+                        Elements itemCombine = elementCombineItem.getElementsByClass("rb-build-overview-td best-hero-list-items").first().getElementsByClass("item-a-tft-two");
                         List<String> listCombine = new ArrayList<>();
                         for (Element combineUrl : itemCombine) {
-                            listCombine.add(combineUrl.attr("href"));
+                            listCombine.add(combineUrl.select("img").attr("src"));
                         }
                         item.setListCombine(listCombine);
                     }
@@ -224,11 +224,11 @@ public class TFTFragment extends Fragment {
                     statString = statString + stats + "\n";
                 }
                 detail.setStat(statString.substring(0, statString.length() - 1));
-                Elements skill = docDetail.getElementsByClass("rb-build-overview-wrap-tabl").get(1).getElementsByClass("rb-build-overview-td");
-                detail.setSkill_des(skill.get(1).text());
-                detail.setSkill_name(skill.get(2).select("img").attr("title"));
-                detail.setSkill_url(skill.get(2).select("img").attr("src"));
-                Elements skillDameEles = skill.get(3).getElementsByClass("ability-lb");
+                Element skill = docDetail.getElementsByClass("rb-build-overview-wrap-tabl-ability").first();
+                detail.setSkill_des(skill.getElementsByClass("rb-build-overview-td-ability").text());
+                detail.setSkill_name(skill.select("img").attr("title"));
+                detail.setSkill_url(skill.select("img").attr("src"));
+                Elements skillDameEles = skill.getElementsByClass("ability-lb");
                 String dame = "";
                 for (Element skillDameEle : skillDameEles) {
                     dame = dame + skillDameEle.text() + "\n";
