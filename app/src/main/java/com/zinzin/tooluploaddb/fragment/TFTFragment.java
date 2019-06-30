@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -17,6 +18,7 @@ import com.zinzin.tooluploaddb.model.teamFightTatics.Detail;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Item;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Origin;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Round;
+import com.zinzin.tooluploaddb.model.teamFightTatics.Team;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Type;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Unit;
 
@@ -38,6 +40,7 @@ public class TFTFragment extends Fragment {
     private List<Detail> detailList = new ArrayList<>();
     private List<Origin> originList = new ArrayList<>();
     private List<Origin> classList = new ArrayList<>();
+    private List<Team> teamList = new ArrayList<>();
     int idItem = 0;
     DatabaseReference rootRef;
 
@@ -71,6 +74,7 @@ public class TFTFragment extends Fragment {
                 getListRound();
                 getListOrigin();
                 getListClass();
+                getListSuggest();
                 return "";
             }
 
@@ -95,8 +99,56 @@ public class TFTFragment extends Fragment {
                 for (Origin origin : originList) {
                     rootRef.child("unit").child("originList").child(origin.getName()).setValue(origin);
                 }
+                rootRef.child("teamList").removeValue();
+                for (Team team : teamList) {
+                    rootRef.child("teamList").child(team.getName()).setValue(team);
+                }
+                Toast.makeText(getActivity(), "done", Toast.LENGTH_SHORT).show();
             }
         }.execute();
+    }
+
+    private void getListSuggest() {
+        try {
+            Document docSuggest = Jsoup.connect(URL + "/teamfight-tactics/best-team-builds/").get();
+            Elements suggestElements = docSuggest.getElementsByClass("counters-sidebar-strong-against-sim");
+            for (int i = 0; i < suggestElements.size(); i++) {
+                Elements teamElements = suggestElements.get(i).getElementsByClass("counters-sidebar-champion-sim buildcs");
+                Team team = new Team();
+                List<Team.Hero> heroList = new ArrayList<>();
+                for (Element heroElement : teamElements) {
+                    Team.Hero hero = new Team.Hero();
+                    hero.setName_hero(heroElement.getElementsByClass("counters-sidebar-champ-name buildcs").text());
+                    hero.setUrl_hero(heroElement.getElementsByClass("image-wrap-list-underlords buildcs").select("img").attr("src"));
+                    hero.setCost(heroElement.getElementsByClass("span-item-tier buildcs").text());
+                    List<String> typeList = new ArrayList<>();
+                    for (Element typeElement : heroElement.getElementsByClass("counters-sidebar-champ-role-sim buildcs")) {
+                        typeList.add(typeElement.text());
+                    }
+                    hero.setType(linkStringFromArray(typeList));
+                    hero.setUrl_item_1(heroElement.getElementsByClass("li-rbm buildcs").get(0).select("img").attr("src"));
+                    hero.setUrl_item_2(heroElement.getElementsByClass("li-rbm buildcs").get(1).select("img").attr("src"));
+                    hero.setUrl_item_3(heroElement.getElementsByClass("li-rbm buildcs").get(2).select("img").attr("src"));
+                    hero.setUrl__item_combine_1_1(heroElement.getElementsByClass("li-rbm buildcs").get(0).getElementsByClass("span-underlords-list-img recipe-img-tft buildcs").get(0).attr("src"));
+                    hero.setUrl__item_combine_1_2(heroElement.getElementsByClass("li-rbm buildcs").get(0).getElementsByClass("span-underlords-list-img recipe-img-tft buildcs").get(1).attr("src"));
+                    hero.setUrl__item_combine_2_1(heroElement.getElementsByClass("li-rbm buildcs").get(1).getElementsByClass("span-underlords-list-img recipe-img-tft buildcs").get(0).attr("src"));
+                    hero.setUrl__item_combine_2_2(heroElement.getElementsByClass("li-rbm buildcs").get(1).getElementsByClass("span-underlords-list-img recipe-img-tft buildcs").get(1).attr("src"));
+                    hero.setUrl__item_combine_3_1(heroElement.getElementsByClass("li-rbm buildcs").get(2).getElementsByClass("span-underlords-list-img recipe-img-tft buildcs").get(0).attr("src"));
+                    hero.setUrl__item_combine_3_2(heroElement.getElementsByClass("li-rbm buildcs").get(2).getElementsByClass("span-underlords-list-img recipe-img-tft buildcs").get(1).attr("src"));
+                    heroList.add(hero);
+                }
+                team.setHeroList(heroList);
+                teamList.add(team);
+
+            }
+            teamList.get(0).setName("Guardian –Imperial");
+            teamList.get(1).setName("Noble – Knight");
+            teamList.get(2).setName("Sorcerer – Elementalist");
+            teamList.get(3).setName("Wild – Dragon");
+            teamList.get(4).setName("Assassin – Void");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void getListOrigin() {
@@ -109,7 +161,7 @@ public class TFTFragment extends Fragment {
                 origin.setName(originsElements.get(i).getElementsByClass("perk-text").text());
                 Elements desEles = originsElements.get(i).getElementsByClass("ssbulitl");
                 List<String> desList = new ArrayList<>();
-                for(Element desEle: desEles){
+                for (Element desEle : desEles) {
                     desList.add(desEle.text());
                 }
                 origin.setDes(desList);
@@ -130,7 +182,7 @@ public class TFTFragment extends Fragment {
                 origin.setName(originsElements.get(i).getElementsByClass("perk-text").text());
                 Elements desEles = originsElements.get(i).getElementsByClass("ssbulitl");
                 List<String> desList = new ArrayList<>();
-                for(Element desEle: desEles){
+                for (Element desEle : desEles) {
                     desList.add(desEle.text());
                 }
                 origin.setDes(desList);
@@ -321,5 +373,14 @@ public class TFTFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String linkStringFromArray(List<String> array) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < array.size(); i++) {
+            stringBuilder.append(array.get(i)).append("/");
+        }
+        String s = stringBuilder.toString();
+        return s.substring(0, s.length() - 1);
     }
 }
