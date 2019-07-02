@@ -12,6 +12,12 @@ public class Type {
         return "Type:{" + name + "," + url + "}";
     }
 
+    public Type(String type, String name, String url) {
+        this.type = type;
+        this.name = name;
+        this.url = url;
+    }
+
     public Type() {
     }
 

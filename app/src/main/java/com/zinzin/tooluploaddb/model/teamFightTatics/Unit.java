@@ -13,6 +13,14 @@ public class Unit {
     public Unit() {
     }
 
+    public Unit(String name, String cost, String tier, String url, List<Type> type) {
+        this.name = name;
+        this.cost = cost;
+        this.tier = tier;
+        this.url = url;
+        this.type = type;
+    }
+
     public String getName() {
         return name;
     }

@@ -80,22 +80,26 @@ public class TFTFragment extends Fragment {
 
             @Override
             protected void onPostExecute(String result) {
+                rootRef.child("unitList").removeValue();
                 for (Unit unit : unitList) {
                     rootRef.child("unit").child("unitList").child(unit.getName()).setValue(unit);
-
                 }
                 for (Detail detail : detailList) {
                     rootRef.child("detailList").child(detail.getName()).setValue(detail);
                 }
+                rootRef.child("itemList").removeValue();
                 for (Item item : itemList) {
                     rootRef.child("itemList").child(String.valueOf(item.getId())).setValue(item);
                 }
+                rootRef.child("roundList").removeValue();
                 for (Round round : roundList) {
                     rootRef.child("roundList").child(round.getName()).setValue(round);
                 }
+                rootRef.child("classList").removeValue();
                 for (Origin class_ : classList) {
                     rootRef.child("unit").child("classList").child(class_.getName()).setValue(class_);
                 }
+                rootRef.child("originList").removeValue();
                 for (Origin origin : originList) {
                     rootRef.child("unit").child("originList").child(origin.getName()).setValue(origin);
                 }
@@ -141,9 +145,9 @@ public class TFTFragment extends Fragment {
                 teamList.add(team);
 
             }
-            teamList.get(0).setName("Guardian –Imperial");
-            teamList.get(1).setName("Noble – Knight");
-            teamList.get(2).setName("Sorcerer – Elementalist");
+            teamList.get(0).setName("Guardian – Imperial");
+            teamList.get(1).setName("Elementalist – Sorcerer – Wild");
+            teamList.get(2).setName("Noble – Knight – Ranger");
             teamList.get(3).setName("Wild – Dragon");
             teamList.get(4).setName("Assassin – Void");
         } catch (IOException e) {
@@ -325,6 +329,7 @@ public class TFTFragment extends Fragment {
                     String detailUrl = detail.attr("href");
                     detailUrlList.add(detailUrl);
                 }
+                detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/chogath/");
                 //lay tier
                 String tier = "";
                 switch (i) {
@@ -369,6 +374,10 @@ public class TFTFragment extends Fragment {
                     unitList.add(unit);
                 }
             }
+            List<Type> chogathType = new ArrayList<>();
+            chogathType.add(new Type("Origin","Void", "https://img.rankedboost.com/wp-content/plugins/league/assets/tft/Void.png"));
+            chogathType.add(new Type("Class","Brawler", "https://img.rankedboost.com/wp-content/plugins/league/assets/tft/Brawler.png"));
+            unitList.add(new Unit("Cho'Gath","$4","S","https://img.rankedboost.com/wp-content/plugins/league/assets/champion-icons/Cho'Gath-Icon.png",chogathType));
 
         } catch (IOException e) {
             e.printStackTrace();
