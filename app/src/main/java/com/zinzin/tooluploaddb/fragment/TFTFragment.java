@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.zinzin.tooluploaddb.R;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Detail;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Item;
+import com.zinzin.tooluploaddb.model.teamFightTatics.ItemBuilder;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Origin;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Round;
 import com.zinzin.tooluploaddb.model.teamFightTatics.Team;
@@ -68,45 +68,45 @@ public class TFTFragment extends Fragment {
         new AsyncTask<Void, Void, String>() {
 
             public String doInBackground(Void... params) {
-                getListUnit();
-                getDetail(detailUrlList);
+//                getListUnit();
+//                getDetail(detailUrlList);
                 getListItem();
-                getListRound();
-                getListOrigin();
-                getListClass();
-                getListSuggest();
+//                getListRound();
+//                getListOrigin();
+//                getListClass();
+//                getListSuggest();
                 return "";
             }
 
             @Override
             protected void onPostExecute(String result) {
-                rootRef.child("unitList").removeValue();
-                for (Unit unit : unitList) {
-                    rootRef.child("unit").child("unitList").child(unit.getName()).setValue(unit);
-                }
-                for (Detail detail : detailList) {
-                    rootRef.child("detailList").child(detail.getName()).setValue(detail);
-                }
-                rootRef.child("itemList").removeValue();
+//                rootRef.child("unitList").removeValue();
+//                for (Unit unit : unitList) {
+//                    rootRef.child("unit").child("unitList").child(unit.getName()).setValue(unit);
+//                }
+//                for (Detail detail : detailList) {
+//                    rootRef.child("detailList").child(detail.getName()).setValue(detail);
+//                }
+                rootRef.child("itemList2").removeValue();
                 for (Item item : itemList) {
-                    rootRef.child("itemList").child(String.valueOf(item.getId())).setValue(item);
+                    rootRef.child("itemList2").child(String.valueOf(item.getId())).setValue(item);
                 }
-                rootRef.child("roundList").removeValue();
-                for (Round round : roundList) {
-                    rootRef.child("roundList").child(round.getName()).setValue(round);
-                }
-                rootRef.child("classList").removeValue();
-                for (Origin class_ : classList) {
-                    rootRef.child("unit").child("classList").child(class_.getName()).setValue(class_);
-                }
-                rootRef.child("originList").removeValue();
-                for (Origin origin : originList) {
-                    rootRef.child("unit").child("originList").child(origin.getName()).setValue(origin);
-                }
-                rootRef.child("teamList").removeValue();
-                for (Team team : teamList) {
-                    rootRef.child("teamList").child(team.getName()).setValue(team);
-                }
+//                rootRef.child("roundList").removeValue();
+//                for (Round round : roundList) {
+//                    rootRef.child("roundList").child(round.getName()).setValue(round);
+//                }
+//                rootRef.child("classList").removeValue();
+//                for (Origin class_ : classList) {
+//                    rootRef.child("unit").child("classList").child(class_.getName()).setValue(class_);
+//                }
+//                rootRef.child("originList").removeValue();
+//                for (Origin origin : originList) {
+//                    rootRef.child("unit").child("originList").child(origin.getName()).setValue(origin);
+//                }
+//                rootRef.child("teamList2").removeValue();
+//                for (Team team : teamList) {
+//                    rootRef.child("teamList2").child(team.getName()).setValue(team);
+//                }
                 Toast.makeText(getActivity(), "done", Toast.LENGTH_SHORT).show();
             }
         }.execute();
@@ -117,8 +117,15 @@ public class TFTFragment extends Fragment {
             Document docSuggest = Jsoup.connect(URL + "/teamfight-tactics/best-team-builds/").get();
             Elements suggestElements = docSuggest.getElementsByClass("counters-sidebar-strong-against-sim");
             for (int i = 0; i < suggestElements.size(); i++) {
-                Elements teamElements = suggestElements.get(i).getElementsByClass("counters-sidebar-champion-sim buildcs");
                 Team team = new Team();
+                Element nameSuggestElements = docSuggest.getElementById(String.valueOf(i + 1));
+//                List<String> name = new ArrayList<>();
+//                for(Element nameE: nameSuggestElements.select("img")){
+//                    name.add(nameE.text());
+//                }
+                team.setName(nameSuggestElements.text());
+                Elements teamElements = suggestElements.get(i).getElementsByClass("counters-sidebar-champion-sim buildcs");
+
                 List<Team.Hero> heroList = new ArrayList<>();
                 for (Element heroElement : teamElements) {
                     Team.Hero hero = new Team.Hero();
@@ -145,11 +152,7 @@ public class TFTFragment extends Fragment {
                 teamList.add(team);
 
             }
-            teamList.get(0).setName("Guardian – Imperial");
-            teamList.get(1).setName("Elementalist – Sorcerer – Wild");
-            teamList.get(2).setName("Noble – Knight – Ranger");
-            teamList.get(3).setName("Wild – Dragon");
-            teamList.get(4).setName("Assassin – Void");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -234,6 +237,20 @@ public class TFTFragment extends Fragment {
                         }
                         item.setListCombine(listCombine);
                     }
+
+
+                    List<ItemBuilder> itemBuildersGroup = new ArrayList<>();
+                    Elements itemBuildersElenments = elementCombineItem.getElementsByClass("li-rbm upg-des");
+                    for (Element itemB : itemBuildersElenments) {
+                        ItemBuilder itemBuilder = new ItemBuilder();
+                        List<String> itemBuilders = new ArrayList<>();
+                        for (Element itemImg : itemB.select("img")) {
+                            itemBuilders.add(itemImg.attr("src"));
+                        }
+                        itemBuilder.setListItem(itemBuilders);
+                        itemBuildersGroup.add(itemBuilder);
+                    }
+                    item.setListItemBuilder(itemBuildersGroup);
                     item.setId(idItem);
                     itemList.add(item);
                     idItem++;
@@ -375,9 +392,9 @@ public class TFTFragment extends Fragment {
                 }
             }
             List<Type> chogathType = new ArrayList<>();
-            chogathType.add(new Type("Origin","Void", "https://img.rankedboost.com/wp-content/plugins/league/assets/tft/Void.png"));
-            chogathType.add(new Type("Class","Brawler", "https://img.rankedboost.com/wp-content/plugins/league/assets/tft/Brawler.png"));
-            unitList.add(new Unit("Cho'Gath","$4","S","https://img.rankedboost.com/wp-content/plugins/league/assets/champion-icons/Cho'Gath-Icon.png",chogathType));
+            chogathType.add(new Type("Origin", "Void", "https://img.rankedboost.com/wp-content/plugins/league/assets/tft/Void.png"));
+            chogathType.add(new Type("Class", "Brawler", "https://img.rankedboost.com/wp-content/plugins/league/assets/tft/Brawler.png"));
+            unitList.add(new Unit("Cho'Gath", "$4", "S", "https://img.rankedboost.com/wp-content/plugins/league/assets/champion-icons/Cho'Gath-Icon.png", chogathType));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -388,6 +405,15 @@ public class TFTFragment extends Fragment {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < array.size(); i++) {
             stringBuilder.append(array.get(i)).append("/");
+        }
+        String s = stringBuilder.toString();
+        return s.substring(0, s.length() - 1);
+    }
+
+    public String linkStringFromArray2(List<String> array) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < array.size(); i++) {
+            stringBuilder.append(array.get(i)).append(" ");
         }
         String s = stringBuilder.toString();
         return s.substring(0, s.length() - 1);
