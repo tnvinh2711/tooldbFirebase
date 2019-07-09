@@ -7,11 +7,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.zinzin.tooluploaddb.fragment.AutoChessFragment;
 import com.zinzin.tooluploaddb.fragment.DotaUnderLordsFragment;
 import com.zinzin.tooluploaddb.fragment.TFTFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    Button btnTFT, btnDotaLords;
+    Button btnTFT, btnDotaLords, btnAutochess;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +23,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         btnTFT = findViewById(R.id.btn_tft);
         btnDotaLords = findViewById(R.id.btn_dota_underlords);
+        btnAutochess = findViewById(R.id.btn_lol_Tier);
         btnTFT.setOnClickListener(this);
+        btnAutochess.setOnClickListener(this);
         btnDotaLords.setOnClickListener(this);
     }
 
@@ -40,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_lol_counter:
                 break;
             case R.id.btn_lol_Tier:
+                AutoChessFragment autoChessFragment = AutoChessFragment.newInstance();
+                goToFragment(autoChessFragment);
                 break;
         }
     }

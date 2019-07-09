@@ -68,45 +68,45 @@ public class TFTFragment extends Fragment {
         new AsyncTask<Void, Void, String>() {
 
             public String doInBackground(Void... params) {
-//                getListUnit();
-//                getDetail(detailUrlList);
+                getListUnit();
+                getDetail(detailUrlList);
                 getListItem();
-//                getListRound();
-//                getListOrigin();
-//                getListClass();
-//                getListSuggest();
+                getListRound();
+                getListOrigin();
+                getListClass();
+                getListSuggest();
                 return "";
             }
 
             @Override
             protected void onPostExecute(String result) {
-//                rootRef.child("unitList").removeValue();
-//                for (Unit unit : unitList) {
-//                    rootRef.child("unit").child("unitList").child(unit.getName()).setValue(unit);
-//                }
-//                for (Detail detail : detailList) {
-//                    rootRef.child("detailList").child(detail.getName()).setValue(detail);
-//                }
+                rootRef.child("unitList").removeValue();
+                for (Unit unit : unitList) {
+                    rootRef.child("unit").child("unitList").child(unit.getName()).setValue(unit);
+                }
+                for (Detail detail : detailList) {
+                    rootRef.child("detailList").child(detail.getName()).setValue(detail);
+                }
                 rootRef.child("itemList2").removeValue();
                 for (Item item : itemList) {
                     rootRef.child("itemList2").child(String.valueOf(item.getId())).setValue(item);
                 }
-//                rootRef.child("roundList").removeValue();
-//                for (Round round : roundList) {
-//                    rootRef.child("roundList").child(round.getName()).setValue(round);
-//                }
-//                rootRef.child("classList").removeValue();
-//                for (Origin class_ : classList) {
-//                    rootRef.child("unit").child("classList").child(class_.getName()).setValue(class_);
-//                }
-//                rootRef.child("originList").removeValue();
-//                for (Origin origin : originList) {
-//                    rootRef.child("unit").child("originList").child(origin.getName()).setValue(origin);
-//                }
-//                rootRef.child("teamList2").removeValue();
-//                for (Team team : teamList) {
-//                    rootRef.child("teamList2").child(team.getName()).setValue(team);
-//                }
+                rootRef.child("roundList").removeValue();
+                for (Round round : roundList) {
+                    rootRef.child("roundList").child(round.getName()).setValue(round);
+                }
+                rootRef.child("classList").removeValue();
+                for (Origin class_ : classList) {
+                    rootRef.child("unit").child("classList").child(class_.getName()).setValue(class_);
+                }
+                rootRef.child("originList").removeValue();
+                for (Origin origin : originList) {
+                    rootRef.child("unit").child("originList").child(origin.getName()).setValue(origin);
+                }
+                rootRef.child("teamList2").removeValue();
+                for (Team team : teamList) {
+                    rootRef.child("teamList2").child(team.getName()).setValue(team);
+                }
                 Toast.makeText(getActivity(), "done", Toast.LENGTH_SHORT).show();
             }
         }.execute();
