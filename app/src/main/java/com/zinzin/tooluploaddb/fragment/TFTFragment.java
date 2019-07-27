@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,7 @@ public class TFTFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_upload, container, false);
-        rootRef = FirebaseDatabase.getInstance().getReference().child("tft_db");
+        rootRef = FirebaseDatabase.getInstance().getReference().child("tft_db_test");
         Button btnUpload = view.findViewById(R.id.btn_upload);
         btnUpload.setText("upload TFT");
         btnUpload.setOnClickListener(new View.OnClickListener() {
@@ -230,12 +231,13 @@ public class TFTFragment extends Fragment {
                     item.setDes(elementCombineItem.getElementsByClass("item-td-underlords-desc").text());
                     item.setUrl(elementCombineItem.select("img").attr("src"));
                     if (i > 0) {
-                        Elements itemCombine = elementCombineItem.getElementsByClass("rb-build-overview-td best-hero-list-items").first().getElementsByClass("item-a-tft-two");
+                        Elements itemCombine = elementCombineItem.getElementsByClass("item-a-tft-two");
                         List<String> listCombine = new ArrayList<>();
                         for (Element combineUrl : itemCombine) {
                             listCombine.add(combineUrl.select("img").attr("src"));
                         }
                         item.setListCombine(listCombine);
+                        Log.e("combime", listCombine.get(0) + listCombine.size());
                     }
 
 
@@ -287,7 +289,7 @@ public class TFTFragment extends Fragment {
                 }
                 detail.setType(typeList);
                 detail.setDes(docDetail.getElementsByClass("rb-build-sec-desc singles-top").text());
-                Elements stat = docDetail.getElementsByClass("rb-build-overview-wrap-tabl").first().getElementsByClass("rb-build-overview-td");
+                Elements stat = docDetail.getElementsByClass("rb-build-overview-wrap-tabl").get(1).getElementsByClass("rb-build-overview-td");
                 List<String> statList = new ArrayList<>();
                 for (int i = 0; i < stat.size() - 1; i = i + 2) {
                     statList.add(stat.get(i).text() + ": " + stat.get(i + 1).text());
@@ -338,45 +340,53 @@ public class TFTFragment extends Fragment {
             Document docUnit = Jsoup.connect(URL + "/teamfight-tactics/").get();
             // lay list unit
             Elements tierElements = docUnit.getElementsByClass("ChampionTierBG1");
-            for (int i = 0; i < 7; i++) {
+            //lay url detail
+            for (Element detail : tierElements) {
+                String detailUrl = detail.select("a").attr("href");
+                detailUrlList.add(detailUrl);
+            }
+            for (int i = 9; i < 14; i++) {
                 Elements unitListElements = tierElements.get(i).getElementsByClass("TierListChampionContainer");
-                //lay url detail
-                Elements detailElements = tierElements.get(i).select("a");
-                for (Element detail : detailElements) {
-                    String detailUrl = detail.attr("href");
-                    detailUrlList.add(detailUrl);
-                }
-                detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/chogath/");
                 //lay tier
                 String tier = "";
                 switch (i) {
-                    case 0:
-                        tier = "S";
+                    case 9:
+                        tier = "5";
                         break;
-                    case 1:
-                        tier = "A";
+                    case 10:
+                        tier = "4";
                         break;
-                    case 2:
-                        tier = "B";
+                    case 11:
+                        tier = "3";
                         break;
-                    case 3:
-                        tier = "C";
+                    case 12:
+                        tier = "2";
                         break;
-                    case 4:
-                        tier = "D";
-                        break;
-                    case 5:
-                        tier = "E";
-                        break;
-                    case 6:
-                        tier = "F";
+                    case 13:
+                        tier = "1";
                         break;
                 }
                 for (Element unitElements : unitListElements) {
                     Unit unit = new Unit();
                     unit.setTier(tier);
-                    unit.setUrl(unitElements.getElementsByClass("image-wrap-list-underlords").select("img").attr("src"));
-                    unit.setCost(unitElements.getElementsByClass("span-item-tier").first().text());
+                    unit.setUrl(unitElements.select("img").attr("src"));
+                    switch (i) {
+                        case 9:
+                            unit.setCost("5$");
+                            break;
+                        case 10:
+                            unit.setCost("4$");
+                            break;
+                        case 11:
+                            unit.setCost("3$");
+                            break;
+                        case 12:
+                            unit.setCost("2$");
+                            break;
+                        case 13:
+                            unit.setCost("1$");
+                            break;
+                    }
                     Elements typeListElement = unitElements.getElementsByClass("TierListNames");
                     unit.setName(typeListElement.first().text());
                     List<Type> typeList = new ArrayList<>();
@@ -391,11 +401,6 @@ public class TFTFragment extends Fragment {
                     unitList.add(unit);
                 }
             }
-            List<Type> chogathType = new ArrayList<>();
-            chogathType.add(new Type("Origin", "Void", "https://img.rankedboost.com/wp-content/plugins/league/assets/tft/Void.png"));
-            chogathType.add(new Type("Class", "Brawler", "https://img.rankedboost.com/wp-content/plugins/league/assets/tft/Brawler.png"));
-            unitList.add(new Unit("Cho'Gath", "$4", "S", "https://img.rankedboost.com/wp-content/plugins/league/assets/champion-icons/Cho'Gath-Icon.png", chogathType));
-
         } catch (IOException e) {
             e.printStackTrace();
         }
