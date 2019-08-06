@@ -71,11 +71,11 @@ public class TFTFragment extends Fragment {
             public String doInBackground(Void... params) {
                 getListUnit();
                 getDetail(detailUrlList);
-                getListItem();
-                getListRound();
-                getListOrigin();
-                getListClass();
-                getListSuggest();
+//                getListItem();
+//                getListRound();
+//                getListOrigin();
+//                getListClass();
+//                getListSuggest();
                 return "";
             }
 
@@ -345,6 +345,10 @@ public class TFTFragment extends Fragment {
                 String detailUrl = detail.select("a").attr("href");
                 detailUrlList.add(detailUrl);
             }
+            detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/camille/");
+            detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/jayce/");
+            detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/jinx/");
+            detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/vi/");
             for (int i = 9; i < 14; i++) {
                 Elements unitListElements = tierElements.get(i).getElementsByClass("TierListChampionContainer");
                 //lay tier
