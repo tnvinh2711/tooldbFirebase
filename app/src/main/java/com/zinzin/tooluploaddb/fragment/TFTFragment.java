@@ -71,11 +71,11 @@ public class TFTFragment extends Fragment {
             public String doInBackground(Void... params) {
                 getListUnit();
                 getDetail(detailUrlList);
-//                getListItem();
-//                getListRound();
-//                getListOrigin();
-//                getListClass();
-//                getListSuggest();
+                getListItem();
+                getListRound();
+                getListOrigin();
+                getListClass();
+                getListSuggest();
                 return "";
             }
 
@@ -267,6 +267,9 @@ public class TFTFragment extends Fragment {
     private void getDetail(List<String> detailUrlList) {
         try {
             for (String url : detailUrlList) {
+                if(url.contains("garen") || url.contains("kayle")){
+                    continue;
+                }
                 Document docDetail = Jsoup.connect(url).get();
                 Detail detail = new Detail();
                 detail.setName(docDetail.getElementsByClass("rb-build-champion-icon").first().select("img").attr("title"));
@@ -340,75 +343,75 @@ public class TFTFragment extends Fragment {
             Document docUnit = Jsoup.connect(URL + "/teamfight-tactics/").get();
             // lay list unit
             Elements tierElements = docUnit.getElementsByClass("ChampionTierBG1");
-            //lay url detail
-            for (Element detail : tierElements) {
-                String detailUrl = detail.select("a").attr("href");
-                detailUrlList.add(detailUrl);
-            }
-            detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/camille/");
-            detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/jayce/");
-            detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/jinx/");
-            detailUrlList.add("https://rankedboost.com/league-of-legends/teamfight-tactics/vi/");
             for (int i = 9; i < 14; i++) {
-                Elements unitListElements = tierElements.get(i).getElementsByClass("TierListChampionContainer");
-                //lay tier
-                String tier = "";
+                //lay url detail
+                for ( Element detail: tierElements.get(i).select("a")){
+                    String detailUrl = detail.attr("href");
+                    detailUrlList.add(detailUrl);
+                }
+            Elements unitListElements = tierElements.get(i).getElementsByClass("TierListChampionContainer");
+            //lay tier
+            String tier = "";
+            switch (i) {
+                case 9:
+                    tier = "5";
+                    break;
+                case 10:
+                    tier = "4";
+                    break;
+                case 11:
+                    tier = "3";
+                    break;
+                case 12:
+                    tier = "2";
+                    break;
+                case 13:
+                    tier = "1";
+                    break;
+            }
+            for (Element unitElements : unitListElements) {
+                Unit unit = new Unit();
+                unit.setTier(tier);
+                unit.setUrl(unitElements.select("img").attr("src"));
                 switch (i) {
                     case 9:
-                        tier = "5";
+                        unit.setCost("5$");
                         break;
                     case 10:
-                        tier = "4";
+                        unit.setCost("4$");
                         break;
                     case 11:
-                        tier = "3";
+                        unit.setCost("3$");
                         break;
                     case 12:
-                        tier = "2";
+                        unit.setCost("2$");
                         break;
                     case 13:
-                        tier = "1";
+                        unit.setCost("1$");
                         break;
                 }
-                for (Element unitElements : unitListElements) {
-                    Unit unit = new Unit();
-                    unit.setTier(tier);
-                    unit.setUrl(unitElements.select("img").attr("src"));
-                    switch (i) {
-                        case 9:
-                            unit.setCost("5$");
-                            break;
-                        case 10:
-                            unit.setCost("4$");
-                            break;
-                        case 11:
-                            unit.setCost("3$");
-                            break;
-                        case 12:
-                            unit.setCost("2$");
-                            break;
-                        case 13:
-                            unit.setCost("1$");
-                            break;
-                    }
-                    Elements typeListElement = unitElements.getElementsByClass("TierListNames");
-                    unit.setName(typeListElement.first().text());
-                    List<Type> typeList = new ArrayList<>();
-                    for (int j = 1; j < typeListElement.size(); j++) {
-                        Type type = new Type();
-                        type.setName(typeListElement.get(j).getElementsByClass("type-tierlist-s").text());
-                        type.setType(setType(type.getName()));
-                        type.setUrl(typeListElement.get(j).select("img").attr("src"));
-                        typeList.add(type);
-                    }
-                    unit.setType(typeList);
-                    unitList.add(unit);
+                Elements typeListElement = unitElements.getElementsByClass("TierListNames");
+                unit.setName(typeListElement.first().text());
+                List<Type> typeList = new ArrayList<>();
+                for (int j = 1; j < typeListElement.size(); j++) {
+                    Type type = new Type();
+                    type.setName(typeListElement.get(j).getElementsByClass("type-tierlist-s").text());
+                    type.setType(setType(type.getName()));
+                    type.setUrl(typeListElement.get(j).select("img").attr("src"));
+                    typeList.add(type);
                 }
+                unit.setType(typeList);
+                unitList.add(unit);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    } catch(
+    IOException e)
+
+    {
+        e.printStackTrace();
     }
+
+}
 
     public String linkStringFromArray(List<String> array) {
         StringBuilder stringBuilder = new StringBuilder();
